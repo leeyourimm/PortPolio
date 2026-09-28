@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>이유림 SAP ABAP Portfolio</title>
+<meta name="description" content="SAP ABAP 개발자 이유림의 포트폴리오. SD 판매·청구 프로그램, RAP 기반 MM·FI 연계 프로그램, BAPI 외부 DB–SAP 전표 인터페이스 프로그램 스펙.">
+<meta name="author" content="이유림">
+<meta name="theme-color" content="#F4F6F9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E151E" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="이유림 · SAP ABAP Developer">
+<meta property="og:description" content="SAP ABAP 개발자 이유림의 포트폴리오. SD 판매·청구 프로그램, RAP 기반 MM·FI 연계 프로그램, BAPI 외부 DB–SAP 전표 인터페이스 프로그램 스펙.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#F4F6F9; --surface:#FFFFFF; --surface-2:#EEF2F7; --ink:#15202D; --muted:#5B6878; --faint:#8793A2;
+  --line:#DCE2EA; --accent:#1A5DA8; --accent-ink:#FFFFFF; --accent-soft:#E5EDF7;
+  --mine:#A86A12; --mine-soft:#FAF0DE; --mine-line:#E3B764;
+  --shadow:0 1px 2px rgba(20,35,55,.06),0 8px 24px rgba(20,35,55,.06);
+  --sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;
+  --bg:#0E151E; --surface:#152030; --surface-2:#1A2738; --ink:#E5ECF4; --muted:#A0AEBF; --faint:#76869A;
+  --line:#26364A; --accent:#72AAE9; --accent-ink:#0E151E; --accent-soft:#18304C;
+  --mine:#E5AE50; --mine-soft:#332917; --mine-line:#8A6526;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0E151E; --surface:#152030; --surface-2:#1A2738; --ink:#E5ECF4; --muted:#A0AEBF; --faint:#76869A;
+  --line:#26364A; --accent:#72AAE9; --accent-ink:#0E151E; --accent-soft:#18304C;
+  --mine:#E5AE50; --mine-soft:#332917; --mine-line:#8A6526;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15.5px;line-height:1.65;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:break-word}
+h1,h2,h3,h4{line-height:1.25;text-wrap:balance;margin:0}
+p{margin:0}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:24px}
+@media (max-width:560px){.wrap{padding-inline:16px}}
+.mono{font-family:var(--mono)}
+.tnum{font-variant-numeric:tabular-nums}
+
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:58px;gap:16px;position:relative}
+.brand{display:flex;align-items:baseline;gap:10px;background:none;border:0;padding:0;cursor:pointer}
+.brand b{font-weight:700;font-size:17px}
+.brand span{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.navlinks{display:flex;gap:4px;list-style:none;margin:0;padding:0}
+.navlinks button{background:none;border:0;padding:8px 12px;border-radius:6px;cursor:pointer;color:var(--muted);font-size:14px;font-weight:500}
+.navlinks button:hover{color:var(--ink);background:var(--surface-2)}
+.navlinks button[aria-current="true"]{color:var(--accent);background:var(--accent-soft)}
+.menubtn{display:none;background:none;border:1px solid var(--line);border-radius:8px;width:40px;height:40px;cursor:pointer;align-items:center;justify-content:center}
+.menubtn i{display:block;width:18px;height:2px;background:var(--ink);position:relative}
+.menubtn i::before,.menubtn i::after{content:"";position:absolute;left:0;width:18px;height:2px;background:var(--ink)}
+.menubtn i::before{top:-6px}.menubtn i::after{top:6px}
+@media (max-width:760px){
+  .menubtn{display:flex}
+  .navlinks{position:absolute;left:0;right:0;top:58px;flex-direction:column;background:var(--surface);border-bottom:1px solid var(--line);padding:8px 16px 16px;box-shadow:var(--shadow);display:none}
+  .navlinks.open{display:flex}
+  .navlinks button{width:100%;text-align:left;padding:12px}
+}
+
+.hero{padding-block:64px 56px;border-bottom:1px solid var(--line)}
+.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:end}
+@media (max-width:880px){.hero-grid{grid-template-columns:1fr;gap:32px}}
+.who{display:flex;align-items:baseline;gap:12px;color:var(--muted);margin-bottom:14px}
+.who b{color:var(--ink);font-size:18px}
+.who span{font-family:var(--mono);font-size:12.5px;letter-spacing:.06em}
+.hero h1{font-size:clamp(36px,5.6vw,58px);font-weight:700;letter-spacing:-.025em;line-height:1.08}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .lead{font-size:clamp(16.5px,1.8vw,18.5px);margin-top:18px;max-width:34em}
+.kw{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.chip{font-family:var(--mono);font-size:12.5px;padding:5px 10px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-weight:500;white-space:nowrap}
+.index{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+.index-h{padding:12px 16px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.06em;display:flex;justify-content:space-between}
+.index button{display:grid;grid-template-columns:1fr auto;gap:2px 12px;width:100%;text-align:left;padding:14px 16px;background:none;border:0;border-bottom:1px solid var(--line);cursor:pointer}
+.index button:last-of-type{border-bottom:0}
+.index button:hover{background:var(--surface-2)}
+.index b{font-size:15px}
+.index small{grid-column:1;color:var(--muted);font-size:13px}
+.index .n{grid-row:1 / span 2;grid-column:2;align-self:center;font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:600}
+
+.proj{padding-block:72px;scroll-margin-top:60px;border-bottom:1px solid var(--line)}
+.proj.alt{background:var(--surface)}
+.proj-h{display:grid;gap:8px;margin-bottom:24px}
+.eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.proj-h h2{font-size:clamp(26px,3.4vw,34px);font-weight:700;letter-spacing:-.01em}
+.proj-h .theme{font-size:17px;color:var(--muted)}
+.meta{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg);margin:0}
+.proj:not(.alt) .meta{background:var(--surface)}
+.meta div{padding:12px 16px;border-right:1px solid var(--line)}
+.meta div:last-child{border-right:0}
+.meta dt{font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.06em}
+.meta dd{margin:2px 0 0;font-weight:600;font-size:14.5px}
+@media (max-width:760px){.meta{grid-template-columns:1fr 1fr}.meta div:nth-child(2){border-right:0}.meta div:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+.sub-h{font-size:13px;font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:36px 0 12px;scroll-margin-top:76px}
+
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-bottom:12px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px;border:1px solid var(--line);background:var(--surface)}
+.legend i.mine{background:var(--mine-soft);border-color:var(--mine-line)}
+.lane{display:flex;align-items:stretch}
+.node{flex:1 1 0;min-width:0;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:11px 12px;display:flex;flex-direction:column;gap:4px}
+.proj.alt .node{background:var(--bg)}
+.node.mine,.proj.alt .node.mine{border-color:var(--mine-line);background:var(--mine-soft)}
+.node .m{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.05em;color:var(--muted)}
+.node.mine .m{color:var(--mine)}
+.node b{font-size:14px;font-weight:600;line-height:1.35}
+.node small{font-size:12px;color:var(--muted);line-height:1.45;overflow-wrap:anywhere}
+.arrow{flex:0 0 24px;display:grid;place-items:center;color:var(--faint)}
+.arrow svg{width:16px;height:16px}
+@media (max-width:760px){.lane{flex-direction:column}.arrow{flex-basis:20px}.arrow svg{transform:rotate(90deg)}}
+.fnote{font-size:13.5px;color:var(--muted);margin-top:10px}
+
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.proj.alt .tbl{background:var(--bg)}
+.tbl table{border-collapse:collapse;width:100%;min-width:680px;font-size:14px}
+.tbl th,.tbl td{padding:10px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl thead th{background:var(--surface-2);font-family:var(--mono);font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.05em;white-space:nowrap}
+.tbl td.mono{font-size:12.5px}
+.tbl tr.mine td{background:var(--mine-soft)}
+.tbl a{font-weight:600;text-decoration:none}
+.tbl a:hover{text-decoration:underline}
+.badge{font-family:var(--mono);font-size:10.5px;font-weight:600;padding:1px 6px;border-radius:4px;border:1px solid var(--mine-line);color:var(--mine);margin-left:6px;vertical-align:1px}
+
+.tags{display:flex;gap:5px;flex-wrap:wrap}
+.mod{font-family:var(--mono);font-size:11px;font-weight:600;padding:2px 7px;border-radius:4px;background:var(--surface-2);color:var(--muted);border:1px solid var(--line);white-space:nowrap}
+.mod.m{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.fig{margin:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface-2)}
+.fig button{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in}
+.fig img{display:block;width:100%;height:auto;max-height:420px;object-fit:contain;background:#fff}
+.fig figcaption{font-size:12.5px;color:var(--muted);padding:7px 12px;border-top:1px solid var(--line)}
+.links{display:flex;gap:8px;flex-wrap:wrap}
+.sbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:7px;padding:7px 12px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;color:var(--ink);white-space:nowrap}
+.sbtn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* 프로젝트 화면: 프로그램 카드 */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.pcard{display:flex;flex-direction:column;gap:6px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:var(--surface);text-decoration:none;color:var(--ink);transition:border-color .15s,box-shadow .15s,transform .15s}
+.proj.alt .pcard{background:var(--bg)}
+.pcard:hover{border-color:var(--accent);box-shadow:var(--shadow);transform:translateY(-1px)}
+.pc-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pc-no{font-family:var(--mono);font-size:12.5px;color:var(--accent);font-weight:600}
+.pcard b{font-size:16.5px;font-weight:700;line-height:1.35}
+.pc-code{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:-4px}
+.pcard p{font-size:13.5px;color:var(--muted);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pc-foot{margin-top:auto;padding-top:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;color:var(--faint)}
+.pc-foot .go{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--accent);white-space:nowrap}
+
+/* 프로그램 상세 페이지 */
+.pg{padding-block:20px 72px;min-height:calc(100vh - 58px)}
+.crumb{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:8px 0;color:var(--muted);font-size:13.5px;cursor:pointer;text-align:left}
+.crumb:hover{color:var(--accent)}
+.pg-h{display:grid;gap:12px;padding:18px 0 22px}
+.pg-eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.1em;color:var(--accent);font-weight:600}
+.pg-eyebrow span{color:var(--faint);font-weight:500}
+.pg-h h1{font-size:clamp(26px,3.6vw,36px);font-weight:700;letter-spacing:-.015em}
+.pg-code{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.pg-ov{font-size:16.5px;max-width:50em}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);position:sticky;top:calc(58px + env(safe-area-inset-top,0px));background:var(--bg);z-index:5}
+.tab{background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;padding:13px 18px;font-size:15px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+@media (max-width:560px){.tab{flex:1 1 0;padding:12px 6px;font-size:14.5px}}
+.tabpanel{padding-top:24px}
+.tabpanel:focus-visible{outline-offset:6px}
+.shots{display:grid;gap:20px}
+.shots .fig img{max-height:76vh}
+.shots .fig figcaption{font-size:13.5px;padding:9px 14px}
+.nlist{margin:0;padding:0;list-style:none;counter-reset:n;display:grid;gap:10px;max-width:62em}
+.nlist li{counter-increment:n;display:grid;grid-template-columns:34px 1fr;gap:6px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:10px;font-size:15.5px}
+.nlist li::before{content:counter(n,decimal-leading-zero);font-family:var(--mono);font-size:12.5px;color:var(--accent);font-weight:600;padding-top:3px}
+.pg code{font-family:var(--mono);font-size:13px;background:var(--surface-2);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px}
+.vg{border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:14px;background:var(--surface)}
+.vg code{display:block;margin-bottom:2px;background:none;padding:0;color:var(--accent);font-weight:600;font-size:12.5px}
+.pnav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:48px;padding-top:24px;border-top:1px solid var(--line)}
+.pn{display:grid;gap:2px;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);text-decoration:none;color:var(--ink)}
+.pn:hover{border-color:var(--accent)}
+.pn small{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.pn b{font-size:15px;font-weight:600}
+.pn.next{text-align:right;grid-column:2}
+@media (max-width:560px){.pnav{grid-template-columns:1fr}.pn.next{grid-column:1;text-align:left}}
+
+.contact{padding-block:56px}
+.contact .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:20px}
+.contact h2{font-size:clamp(22px,3vw,28px);font-weight:700}
+.citem{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.citem .v{font-family:var(--mono);font-weight:600;font-size:16px;user-select:all}
+footer{border-top:1px solid var(--line);padding-block:24px;font-size:13px;color:var(--faint)}
+
+.lb{position:fixed;inset:0;z-index:80;background:rgba(5,9,14,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 12px;gap:12px}
+.lb img{max-width:100%;max-height:82vh;object-fit:contain;background:#fff;border-radius:6px}
+.lb p{color:#dfe7f0;font-size:13.5px;text-align:center}
+.lb button{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:12px;width:44px;height:44px;border-radius:8px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;font-size:22px;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<noscript><p style="padding:24px;font-family:sans-serif">이 페이지는 JavaScript를 켜야 볼 수 있습니다.</p></noscript>
+
+<script src="vendor/react.production.min.js"></script>
+<script src="vendor/react-dom.production.min.js"></script>
+<script src="vendor/htm.umd.js"></script>
+<script>
+/* 모든 내용은 첨부 포트폴리오 자료에 있는 정보만 사용 */
+const PROFILE = { name:"이유림", en:"LEE YOURIM", email:"splv200@naver.com",
+  notion:"https://app.notion.com/p/KDT-3dd2111b653480cdb4fffbe59ae6b056?source=copy_link" };
+const V = (id) => `https://drive.google.com/file/d/${id}/view?usp=sharing`;
+
+const PROJECTS = [
+{
+  id:"sd", no:"Project 01", title:"삼만리 모빌리티 SAP ERP 구축", theme:"ABAP 기반 SD 개발 · FI·PP 연계",
+  meta:[["기간","2026.03 – 2026.07"],["담당","SD 모듈"],["연계 모듈","FI · PP"],["개발 환경","ABAP · CDS · SAPUI5"]],
+  flow:[
+    {m:"SD",b:"견적",s:"견적 생성",mine:1},{m:"SD",b:"판매오더",s:""},{m:"SD",b:"출고 · 출하",s:"딜리버리 오더 조회",mine:1},
+    {m:"SD → FI",b:"대금청구",s:"청구 · 전표 · 세금계산서",mine:1},{m:"FI",b:"세금계산서",s:"승인 · 출력",mine:1},{m:"FI",b:"수금 현황",s:"대금청구 조회",mine:1}],
+  flowNote:"연계: SOP 생성(SD → PP 생산계획) · 환율 배치 수집(외부 API → FI)",
+  specs:[
+    { t:"견적 생성", mods:["SD"], type:"SAPUI5",
+      ov:"실시간 재고·가격 정보를 기반으로 현장에서 견적서를 생성하는 앱",
+      fn:["고객 코드 입력 → 고객 정보·기존 견적 내역 조회","자재 조회 → 담기 → 견적서 작성 단계형 화면, 진행 상태에 따라 접근 가능한 화면만 활성화","자재 선택 시 Splitter 화면에서 재고·가격·판매 현황 조회","지도에서 지역 선택 시 대리점·기업 고객의 구매 이력과 판매 현황 조회","견적서 미리보기, PDF 출력(QR 스캔으로 다른 기기에서 다운로드), 기기 저장"],
+      logic:[], imgs:[["code-quote","견적 생성 화면 흐름"]], video:V("1gj4qgUbbVOMPGcbEvyzjOyLYrbiwRJDr") },
+    { t:"SOP 생성", mods:["SD","PP"], type:"ABAP ALV · CDS",
+      ov:"판매계획과 생산계획을 연계해 적정 생산량을 수립하는 계획 관리 프로그램. 긴급 생산오더 증가로 인한 계획 안정성 저하를 줄이기 위해 계획 수립 자동화 기능 제공",
+      fn:["단건 생성 / 다건 생성(더블클릭한 자재의 3개월분 SOP)","계획 수량 자동 채움: 작년도 판매량 기준, PIR + 작년도 판매량 기준","계획 검증: 작년 동월 대비 110% 이상 노란색, 90% 이하 빨간색","수정 모드, SOP 수량 초기화, 자재번호 클릭 시 영업조직별 작년도 판매량 차트"],
+      logic:["<code>DATA_CHANGED</code> 이벤트로 실시간 입력 검증","<code>TRY-CATCH</code>(cx_sy_conversion_no_number)로 숫자 형식 검증, 음수 입력 차단","<code>modify_cell</code>로 잘못된 입력값 즉시 복구, <code>add_protocol_entry</code>로 ALV 표준 메시지","CDS View로 전년도 판매량 집계, 이전 화면 번호 기준 분기로 중복 로직 최소화"],
+      imgs:[["code-sop","SOP 생성 · 옵션 선택 · 자동 채움"]], video:V("1ZNAL-Eb_e_6mVHQ2-85qS4pEvjJELBt3") },
+    { t:"딜리버리 오더 조회", mods:["SD"], type:"ABAP ALV",
+      ov:"딜리버리 오더 상세 정보를 조회하는 프로그램",
+      fn:["검색 조건: 출고요청 번호, 판매오더 번호, 실제 출고일, 납기 일자, 최대 조회 건수","오더 유형별 조회: 전체 / 일반 오더(반품 이력 없음) / 교환 오더(반품 이력 포함)","출하 진행 상태 필터링: 승인 대기 / 출하 중 / 출하 완료","헤더 더블클릭 시 딜리버리 아이템 조회"],
+      logic:["<code>cl_gui_docking_container</code>로 상단 top of page 영역 생성"],
+      imgs:[["code-delivery","조회 조건 → 헤더 → 아이템"]], video:V("1YmgvOeFG6Kj33cR5EvN4XUv-4xRs-Oqi") },
+    { t:"대금청구 생성", mods:["SD","FI"], type:"ABAP ALV · CDS",
+      ov:"판매오더·딜리버리 오더 정보를 기반으로 대금청구를 생성하고 관리하는 프로그램",
+      fn:["선택한 판매 건 청구 처리, 청구 전 관련 판매오더(ALV)·딜리버리(Tabstrip) 조회","판매오더·출고 정보 기준 대금청구 문서 생성","견적 생성부터 청구 시점까지 가격 변동 여부 확인 후 안내","저장 후 대금청구 조회 프로그램으로 이동"],
+      logic:["대금청구·세금계산서·전표 Header/Item 6개 테이블 생성 (전표는 Function 호출)","저장 전 동일 판매오더 존재 여부 검증, 저장 중 오류 시 <code>ROLLBACK WORK</code>","저장 후 ITAB <code>REFRESH</code>로 중복 저장 방지","<code>SUBMIT … WITH</code>로 리포트 간 데이터 전달","CDS View <code>ZCDS_D3_SD_0024</code>로 견적일~청구일 가격 변동 이력 조회"],
+      imgs:[["code-billing","대금청구 생성 화면"],["code-cds","가격 변동 체크 CDS View"]], video:V("1J3XzH-vzPWsCmbyjnAifY8nF8vzDMZ5J") },
+    { t:"대금청구 조회", mods:["SD","FI"], type:"ABAP ALV",
+      ov:"대금청구와 관련 회계 전표·판매오더·출고요청 문서를 연계 조회해 채권 상태와 회수 현황을 보는 프로그램",
+      fn:["최대 조회 건수 변경","대금청구 번호 → 회계 정보, 판매오더 번호 → 문서 요약, 출고요청 번호 → 배송 요약","채권 상태 아이콘: 미수금 / 일부 수금 / 전체 수금 / 미도래","아이콘 기준 필터링"],
+      logic:["회계 전표 Line Item 기반 수금 금액 집계","전기키 01(고객 차변)·11(고객 대변) 분기로 채권/수금 자동 분류","잔여채권 계산 및 음수 보정"],
+      imgs:[["code-billing-list","대금청구 조회 · 연계 문서"]], video:V("15lSQzImVXSTlC9MxmjlUMWGforfJGy3h") },
+    { t:"세금계산서 조회 및 승인", mods:["FI"], type:"ABAP ALV · CBO",
+      ov:"생성된 세금계산서를 조회하고 CBO 기반 승인 프로세스로 승인 상태를 관리하는 프로그램",
+      fn:["전표 번호 클릭 시 전표 단일 조회 프로그램으로 이동","연관 판매오더의 품목별 금액 조회","승인 버튼으로 승인 상태 변경 (승인 이력 기반 UI5 출력)","승인 전·후 상태별 조회"],
+      logic:["<code>SET PARAMETER ID</code> BUK·GJR·BLN으로 회사코드·회계연도·전표번호 전달","<code>CALL TRANSACTION 'ZRD3FI0001' AND SKIP FIRST SCREEN</code>으로 상세 화면 호출"],
+      imgs:[["code-tax-fi","세금계산서 조회 및 승인"]], video:V("1wE9Cakq2iumNhQzJ-emSxcCR1r3rlFGC") },
+    { t:"세금계산서 조회 및 출력", mods:["SD"], type:"SAPUI5",
+      ov:"생성된 세금계산서를 조회하고 출력하는 앱",
+      fn:["승인 상태별 조회: 전체 / 미승인 / 승인","세금계산서 미리보기","PDF 출력"],
+      logic:["CDS View 기반 Value Help, <code>SelectDialog</code>로 세금계산서 번호 검색·선택","html2pdf.js 동적 로딩으로 초기 렌더링 부담 감소","출력 영역(DOM)을 PDF Blob으로 변환하는 비동기 처리, 세금계산서 번호로 파일명 자동 지정"],
+      imgs:[["code-tax-ui5","조회 → 미리보기 → PDF"]], video:V("1wUtK3F720aFVayqjN2jJL4aPeiUIMx0z") },
+    { t:"환율 배치 수집", mods:["FI"], type:"ABAP · Batch Job · Open API",
+      ov:"한국수출입은행 환율 정보를 기반으로 환율 데이터를 저장하는 프로그램",
+      fn:["배치 잡으로 환율 저장 자동화 (매일 11시)","한국수출입은행 Open API로 환율 조회 후 저장","네트워크 오류·API 장애 대비, 날짜를 지정하는 수동 저장"],
+      logic:[], imgs:[["code-fxbatch","배치 실행 이력 · 수동 저장 · 환율 목록"]] },
+    { t:"환율 조회", mods:["FI"], type:"SAPUI5",
+      ov:"환율 정보를 조회·분석하고 결산 기준일 환율을 표시하는 앱",
+      fn:["월별 / 주차별 환율 조회","최고·최저·평균 환율, 변동폭, 전일 대비 변동률","결산 기준 환율 조회","결산일이 휴일·공휴일이면 가장 가까운 영업일 환율 적용"],
+      logic:["VBox로 월별·주차별 차트 화면 분리 및 전환","비거래일 데이터를 제외해 연속적인 추이 차트 구성","결산 환율을 매주 월요일 또는 가장 가까운 이전 영업일에 마킹","차트 선택 이벤트와 Splitter 상세 영역 연계"],
+      imgs:[["code-fx","월별 · 주차별 환율 조회"]], video:V("1KQQBELCN5iSnqE4inlI45MGIN6mrFbK5") },
+  ],
+},
+{
+  id:"rap", no:"Project 02", title:"S-Mobile RAP 통합 시스템", theme:"RAP 기반 MM 기준정보 · 구매 · 입고 → FI 전표 연계",
+  meta:[["기간","2026.07 – 2026.09"],["개발 범위","MM 6 · FI 3"],["개발 기준","모듈별 FS"],["개발 환경","ABAP Cloud · RAP · CDS · Fiori Elements"]],
+  flow:[
+    {m:"MM · FI",b:"기준정보",s:"자재 · 공급업체 · G/L 계정 · 계정결정",mine:1},{m:"MM",b:"구매정보 레코드",s:"플랜트별 단가 · 수량 · 납기",mine:1},{m:"MM",b:"구매오더",s:"PO Header / Item",mine:1},
+    {m:"MM",b:"입고",s:"101 · 102 · 311 · 511",mine:1},{m:"MM → FI",b:"회계전표",s:"BSX · WRX · PRD · GBB",mine:1}],
+  flowNote:"입고 시 참조: 전기기간 오픈 여부 · 계정결정 G/L",
+  erd:["kdt-erd","DB 설계: ZTA20 테이블 15개 (자재 · 공급업체 · G/L 계정 · 계정결정 · 구매정보 · 구매오더 · 입고 · 전표 · 전기기간)"],
+  specs:[
+    { t:"자재 마스터 관리", mods:["MM"], type:"RAP Managed · OData V4 · Draft",
+      ov:"완제품 Set · 반제품 · 부품 · 포장재를 전국 지점 공통 기준으로 관리하는 자재 마스터 BO. 자재(ZTA20MARA)와 다국어 자재명(ZTA20MARA_T)을 Composition으로 구성",
+      fn:["List Report: 자재타입 · 플랜트 · 자재번호 · 등록일, 플랜트별 최신 등록일 순 정렬","생성 팝업: 자재번호 · 자재타입 · 평가클래스 · 플랜트 · 저장위치 필수 입력","Object Page: 공장 정보 / 자재 상세정보 / 자재 가격 / 자재명(KO · EN)","기본값: 통화 KRW(조회 전용) · 가격단위 1 · 등록일 당일","수정 시 기본단위 · 표준가격 · 가격단위 · 자재명만 변경 가능"],
+      logic:["저장 시 검증: 필수값, 자재번호 중복, 플랜트–저장위치 관계, 등록일(당일부터 1개월 전까지)","저장 전 변경금지 Flag(MATFI) 설정, 수정은 etag 기반 낙관적 락","자재 삭제 시 Composition으로 자재명(Text) 연계 삭제","표준가격 · 가격단위 · 가격결정방식(S/V)은 입고 전표 금액 계산과 511 전표 생성 여부 판단에 사용"],
+      imgs:[["rap-mara","FS 화면 설계: 자재 Object Page"]] },
+    { t:"공급업체 마스터 관리", mods:["MM"], type:"RAP Managed · OData V4 · Draft",
+      ov:"부품 · 반제품 공급업체를 분류 · 조정계정 · 거래조건과 함께 관리하는 공급업체 마스터 BO (ZTA20LFA1)",
+      fn:["List Report: 공급업체 분류 · 공급업체 · 조정계정 · 거래종료, 분류별 공급업체 순 정렬","생성 팝업: 공급업체 분류 Combo Box (A1 국내지급 · A2 해외지급 · A3 관계회사 · A4 주요 공급업체 · A5 인건비 · A6 세금)","Object Page: 공급업체 정보 / 계정 정보 / 기타 정보(최소주문금액 · 주문통화 · 거래종료)","주문통화 KRW 고정, 수정 시 공급업체번호 · 주문통화 변경 불가"],
+      logic:["공급업체번호는 분류별 번호대로 자동 채번(A1은 1번대), <code>CL_NUMBERRANGE_RUNTIME=>NUMBER_GET</code> 사용, Draft 저장 시에는 채번하지 않음","저장 시 공급업체 분류 · 공급업체명 필수 검증","조정계정은 G/L 계정 BO의 매입채무 계정을 Value Help로 선택","주소 · 연락처 · 사업자등록번호 · 지급조건 필드를 추가해 테이블 설계"],
+      imgs:[["rap-lfa1","FS 화면 설계: 공급업체 생성 화면"]] },
+    { t:"G/L 계정 관리", mods:["FI"], type:"RAP Managed · Draft · Action",
+      ov:"전표에 쓰는 G/L 계정을 계정유형별로 등록하고 다국어 계정명(Text)을 함께 관리하는 BO (ZTA20SKA1 / ZTA20SKA1_T). 다른 BO에서 참조 중인 계정은 변경과 사용 중지를 제한",
+      fn:["List Report: 계정유형 · 계정번호(계정명), 계정유형별 계정번호 순 정렬","Object Page: 계정 정보 / 계정명(KO · EN)","물리 삭제 대신 사용 중지 · 사용 재개 버튼으로 삭제 플래그(LVORM) 관리","계정유형(대차대조표 · 현금 · 1차 원가 등)은 Combo Box, 언어는 Value Help"],
+      logic:["Instance Feature Control: 기존 계정은 계정번호 수정 불가, 계정결정 · 공급업체 조정계정에서 사용 중이면 계정유형 · 계정타입 수정 불가","<code>setDeletionFlag</code> Action: 계정결정(ZTA20T030) · 공급업체 조정계정 참조 여부를 조회해 사용 중이면 오류 메시지로 차단, 미참조 계정만 <code>MODIFY ENTITIES</code>로 LVORM 설정","LVORM 값에 따라 사용 중지 · 사용 재개 버튼 활성 / 비활성 전환","Validation: 계정번호 · 계정유형 필수, 계정명은 같은 계정 안에서 언어 중복 차단","Edit 시 다른 BO에서 사용 중인 계정이면 변경 제한을 Information 메시지로 안내"],
+      imgs:[["rap-ska1","FS 화면 설계: G/L 계정 Object Page"]] },
+    { t:"회계 계정 결정 관리", mods:["MM","FI"], type:"RAP Managed · OData V2",
+      ov:"이동유형 · 회계결정코드 · 평가클래스별 G/L 계정을 매핑해, 입고와 동시에 입고 전표가 생성되도록 하는 자동 계정결정 마스터 (ZTA20T030)",
+      fn:["List Report: 이동유형 · 순번 · 회계결정코드 · 평가클래스 · 계정, 이동유형별 순번 정렬","회계결정코드: BSX 재고 · WRX GR/IR · PRD 가격차이 · GBB 상대계정","생성 시 이동유형 · 회계결정코드 · 계정번호 필수, 수정 시 평가클래스 · 계정 · 차/대변만 변경 가능","계정은 등록된 G/L 계정만 Value Help로 선택, 회계결정코드 · 평가클래스는 Combo Box"],
+      logic:["순번 자동 채번: 같은 이동유형의 최대 순번 + 1","저장 시 G/L 계정 존재 여부 검증","차/대변 · 계정과목표(CAKR) · 계정수정자를 함께 관리하고, 평가클래스를 비운 행은 평가클래스와 무관한 공통 계정(예: WRX)으로 사용"],
+      imgs:[["rap-t030","FS 화면 설계: 101 입고의 BSX · WRX 계정결정"]] },
+    { t:"구매정보 레코드 관리", mods:["MM"], type:"RAP Managed · OData V4 · Draft",
+      ov:"공급업체–자재 조합의 플랜트별 구매단가 · 최대 구매수량 · 예정 배송일수 · 유효 종료일을 관리해 구매오더 작성에 재사용하는 BO. Header(ZTA20EINA)–플랜트별 Item(ZTA20EINE) 구조",
+      fn:["List Report: 공급업체 · 자재 · 구매정보번호, 공급업체별 자재 순 정렬","Object Page: 구매정보 레코드 정보 / 공급업체 상세정보 / 자재 상세정보 / 아이템","Item 생성 시 플랜트 입력 팝업(필수), 구매통화 KRW 고정, 유효 종료일 기본값 9999-12-31","수정 시 구매정보번호 · 플랜트 · 구매통화 변경 불가"],
+      logic:["구매정보번호 연도별 채번(예: 2026000005), <code>CL_NUMBERRANGE_RUNTIME=>NUMBER_GET</code> 사용, Draft 저장 시에는 채번하지 않음","저장 시 공급업체 · 자재 · 구매단위 필수 검증과 공급업체 · 자재 관련 체크","Interface View로 구매오더 BO가 구매정보를 Association으로 참조","최소 · 표준 주문수량, 가격단위 필드를 추가해 Item 테이블 설계"],
+      imgs:[["rap-eina","FS 화면 설계: 연도별 채번된 구매정보 레코드"]] },
+    { t:"구매오더 관리", mods:["MM"], type:"RAP Managed · OData V4 · Draft",
+      ov:"구매정보 레코드를 참조하거나 공급업체 · 자재를 직접 선택해 구매오더를 작성하고, 입고 · 송장 완료 여부까지 관리하는 BO. PO Header(ZTA20EKKO)–Item(ZTA20EKPO) 구조",
+      fn:["List Report: PO 생성일 · 공급업체 · 구매오더번호 · 취소, 최신 생성일 순 정렬","기본값: PO 생성일 당일 · 통화 KRW, Item 번호 10 · 20 · 30 자동 증가, Item 통화는 Header 통화","구매정보번호 선택 시 해당 자재번호 · 수량 · 단위 등 자동 표시","입고완료(ELIKZ) · IV 완료(EREKZ) 상태 표시","저장된 PO는 목록에서 바로 삭제할 수 없고 '구매오더 삭제' 버튼으로 삭제 플래그 처리, 삭제된 PO는 변경 불가 (Draft는 바로 삭제)"],
+      logic:["구매오더번호 내부 채번 45번대(4500000000~), 41번대는 외부용으로 분리, Draft 저장 시에는 채번하지 않음","저장위치 Value Help는 입력한 플랜트의 저장위치만, 구매정보번호 Value Help는 플랜트 + 공급업체 기준으로 필터","저장 시 PO 생성일 · 공급업체 필수 검증","입고 BO가 호출하는 <code>updateGoodsReceiptWemng</code> Action으로 누적 입고수량 반영"],
+      imgs:[["rap-ekpo","FS 화면 설계: 구매정보번호 선택 후 PO Item"],["rap-ekko","FS 화면 설계: 구매오더 삭제 버튼"]] },
+    { t:"입고 (Goods Receipt)", mods:["MM","FI"], type:"RAP Managed · OData V4 · Draft",
+      ov:"PO 참조 입고부터 재고, 구매오더 입고수량, FI 전표까지 이어지는 입고 BO. 이동유형 101 입고 / 102 입고 취소 / 311 저장위치 이동 / 511 무상입고 처리",
+      fn:["List Report: 증빙일자·자재문서연도·입고문서번호·전기일자 검색, 전기일자 → 입고문서번호 DESC 정렬","Object Page: 입고 Header–Item, 아이템별 PO 정보·입고 정보","기본값: 자재문서연도 = 현재 연도, 증빙·전기·등록일 = 당일, 이동유형 101 · KRW · EA","채번: 입고 GR 4000…, 이동 GM 9000…, 아이템 +10","입고 완료 버튼으로 PO Item 완료 처리 (101에서만 활성화)","생성 완료된 입고문서의 Item 추가 제한, 부분입고 PO는 남은 수량 자동 매핑"],
+      logic:["입고 BO → 구매오더 BO: <code>MODIFY ENTITIES … EXECUTE updateGoodsReceiptWemng</code>로 누적 입고수량 반영","<code>action ( features : instance ) setGoodsReceiptComplete</code>로 버튼 활성·비활성","입고 BO → 전표 생성 클래스 <code>ZCL_A20_DOCUMENT_POST</code> → 전표 BO Action(<code>createDocumentHeader</code> / <code>createDocumentItem</code>)으로 입고 전표 생성","계정결정 테이블 ZTA20T030(BWART + KTOSL + BKLAS + KOMOK)으로 G/L 자동 매핑: 101 BSX·WRX, 102 역방향, 511 BSX·GBB, 가격차이 PRD, 311 전표 미생성"],
+      imgs:[["kdt-list","List Report / Object Page"],["kdt-create","생성 화면 (101)"],["kdt-bo","입고 완료 → 구매오더 반영"]],
+      validations:[
+        ["ValidateDateField","전기일자가 Open된 전기기간 내인지 검증, 위반 시 저장 차단 · 당일 외 일자 경고"],
+        ["ValidateItemField","Item 없는 입고문서 생성 방지"],
+        ["validateLifnr","101·102의 공급업체 필수 입력·마스터 존재 검증"],
+        ["validateMenge","동일 PO Item의 입고·취소 이력 누적, 순입고수량 기준 검증 (Item 분할 우회 방지)"],
+        ["validateCancelMenge","102 취소 수량이 원본 입고수량을 넘지 않도록 검증"],
+        ["validateBwart","한 입고문서 내 이동유형 통일, 101·102만 PO 참조 허용"],
+        ["validateBwart102","동일 PO + PO Item의 선행 101 입고가 있을 때만 취소 허용"],
+        ["validateBwart311","PO 참조 제한, 이동 저장위치 필수, 동일 저장위치 차단"],
+        ["validateBwart511","무상입고 PO 참조 제한"],
+        ["validateEbeln","PO 기반 입고의 모든 Item이 같은 PO 참조"],
+        ["validatePrice","가격차이(PRD) 발생 가능성을 Information 메시지로 안내"],
+        ["ValidationDocument","이동유형별 필수 계정결정(BSX·WRX·GBB) 존재 확인 후 전표 생성"],
+      ],
+      links:[["프로그램 상세 코드 (Notion)", PROFILE.notion]] },
+    { t:"회계전표 (입고 전표)", mods:["FI"], type:"RAP Managed · Draft · EML",
+      ov:"입고 결과를 받아 회계전표 Header(ZTA20BKPF) / Item(ZTA20BSEG)을 생성하고 조회하는 FI 전표 BO. 전표 생성 클래스가 이동유형별 전표유형 · 금액 · 계정 · 전기키를 결정",
+      fn:["전표유형: 101 · 102 → WE, 511 → WA, 311 저장위치 이동은 전표 미생성","원본 문서 연결: 참조유형 MKPF + 참조키(자재문서번호 + 연도), 같은 입고문서의 전표 Header 중복 생성 방지","102 입고 취소: 원본 101 입고문서의 전표를 찾아 원전표로 연결","적요 미입력 시 이동유형별 기본 적요(구매오더 입고 · 입고 취소 · 무상 입고)","전표 List Report / Object Page(Header–Item) 조회"],
+      logic:["금액: BSX = 수량 × 표준가격 ÷ 가격단위, WRX = 수량 × PO 단가 ÷ 가격단위, PRD = WRX − BSX (0이면 라인 미생성)","계정결정을 이동유형 + 계정과목표(CAKR)로 조회해 순번대로 라인 생성, 자재 평가클래스와 다른 행은 제외","차/대변: 101은 GR/IR 대변, 102는 GR/IR 차변, PRD는 가격차이 부호에 따라 결정","전기키: BSX 89/99 · WRX 86/96 · PRD · GBB 83/93, 계정유형은 전기키 Value Help CDS(ZI_A20_BSCHL_F4)에서 조회","511 무상입고: 가격결정방식 S면 BSX · GBB 전표, V면 전표 미생성","전표번호: 번호범위 객체 ZNRA2008에서 전표유형별 구간으로 채번","Header · Item은 <code>MODIFY ENTITIES … EXECUTE createDocumentHeader / createDocumentItem</code>로 생성 (Action 파라미터: Abstract Entity)"],
+      imgs:[["kdt-acct","이동유형별 계정 결정"],["kdt-doc","101 입고 결과 전표"]] },
+    { t:"전기기간 관리", mods:["FI"], type:"RAP Managed · Draft · Determination",
+      ov:"회계연도 · 기간별 전기 허용 여부를 관리하고, 허용 기간 밖의 전기를 막는 기준 BO (ZTA20PERIOD). 설계 요구사항(FS)에 없던 기능으로 추가 구현",
+      fn:["회계연도 · 기간별 전기기간 오픈 여부 관리","생성 시 회사코드 · 회계연도 · 기간 · 시작일 · 종료일 자동 설정(조회 전용)","입고 BO의 전기일자 검증(ValidateDateField)이 오픈된 전기기간을 참조해 기간 외 전기 차단"],
+      logic:["<code>determination SetDefaultField on modify { create; }</code>: 시스템 일자 기준 회계연도 · 기간, 월 시작일, 월말일(RP_LAST_DAY_OF_MONTHS), 오픈 Flag 설정","UUID Key managed numbering, Draft(Edit · Activate · Discard · Resume · Prepare)"],
+      imgs:[] },
+  ],
+},
+{
+  id:"erp", no:"Project 03", title:"SAP ERP 구축 · 외부 DB 연계", theme:"IMG 설정 · BAPI 전표 생성 · 외부 시스템 인터페이스",
+  meta:[["기간","2026.07 – 2026.10"],["범위","FI · MM · SD"],["회사코드","CL04"],["개발 환경","ABAP · BAPI · RFC · REST"]],
+  flow:[
+    {m:"WEB",b:"지점 판매 입력",s:"지점 / 제품 / 수량"},{m:"DB",b:"웹 DB 저장",s:"SQLite · 미처리"},{m:"SAP",b:"12시 배치 수신",s:"ZPCL04FI03",mine:1},
+    {m:"FI",b:"매출 전표 생성",s:"BAPI_ACC_DOCUMENT_POST",mine:1},{m:"SAP → WEB",b:"결과 회신",s:"RFC → REST POST",mine:1},{m:"DB",b:"처리완료",s:"전표 키 저장"}],
+  flowNote:"역분개(ZPCL04FI04): SAP 역분개 → 웹 상태 미처리로 복구 → 다음 배치 재업로드",
+  config:[
+    ["FI","OBY6 · SPRO · OBBO → OB52 · FBN1 → OBA7 · OBYC","회사코드 전역설정, 사업장 1021, 전기기간, 번호범위·전표유형, 자동계정결정(BSX·WRX·GBB·PRD)"],
+    ["MM","OX10 · OX09 · OX08 · OX18 · OX17 · OMKI · OMWM · OMWD · OMS2 · OMSK · OME4 · OMBT · OMC0 · T169P · OMSY · MMPV","플랜트 IO04·ST04, 저장위치 8개, 구매조직 1116, 평가수정 0001, 자재유형 ZHW · 평가클래스 3100, 송장검증"],
+    ["SD","OVX5 · OVXI · OVX1 · OVX4 · OVX3 · OVXK · OVX6 · OVXM · OVXJ · VKOA","영업조직 SO04, 유통경로 ON·MT, 영업장 OF04, 영업그룹 SG4, 매출 계정결정 ERL"],
+    ["Master","BP · MM01","고객 5 (조정계정 11040100), 공급업체 4, 자재 10 (표준가 S)"],
+  ],
+  specs:[
+    { t:"FI 전표 대량 업로드 (12시 배치)", code:"ZPCL04FI03", mods:["FI"], type:"ABAP · BAPI · RFC · REST",
+      ov:"외부 웹 DB와 SAP를 연계해 지점 판매 데이터를 매출 전표로 자동 생성하고 결과를 회신하는 프로그램",
+      fn:["웹 DB 미처리 판매 데이터 수신 (Web ID, 지점, 제품, 수량)","금액 계산(수량 × 단가) 후 매출 전표 생성","테스트 모드: 전표 생성 없이 검증, 예상 전표번호 표시","전표 키를 웹 DB로 회신해 입력–전표 추적 및 중복 전기 방지","매일 12시 백그라운드 잡 실행"],
+      logic:["헤더: 회사코드·증빙일·전기일·전표유형 SA 매핑, 회계연도·기간은 전기일에서 추출","라인: 매출채권(차변) / 매출 G/L(대변), 대변 금액 × -1","사업장 BUPLA를 <code>EXTENSION2</code>로 전달, BAdI <code>ACC_DOCUMENT</code>에서 반영","<code>BAPI_ACC_DOCUMENT_POST</code> → 실패 시 ROLLBACK·빨간불, 성공 시 COMMIT·초록불","COMMIT 이후에만 RFC <code>Z_FI_DOCUMENT_POST_1</code> 호출","<code>CL_HTTP_CLIENT</code>로 /api/entries/{Web ID}/link-document에 JSON POST, X-API-Key 인증, ngrok 공개","모듈풀은 SM36 등록 불가 → 로직(F01)을 공유하는 배치 전용 리포트 ZPCL04FI03_BATCH 분리"],
+      imgs:[["bapi-web","웹 입력 화면"],["bapi-prog","웹 DB 수신 미처리 항목"],["bapi-run","테스트 실행 → 실제 실행 13건 → 생성 전표"]] },
+    { t:"업로드 전표 역분개", code:"ZPCL04FI04", mods:["FI"], type:"ABAP · REST",
+      ov:"업로드 전표를 역분개하고 웹 DB 상태를 함께 되돌리는 프로그램",
+      fn:["입력: 회사코드 / 전표번호 / 회계연도 / 역분개 전기일 / 사유","SAP 전표 역분개","웹 API 호출로 해당 항목을 미처리 상태로 복구","다음 배치에서 재업로드 대상으로 조회"],
+      logic:["표준 역분개만 하면 웹 DB가 처리완료로 남아 재업로드 불가 → SAP 역분개와 웹 상태 복구를 한 번에 처리"],
+      imgs:[["bapi-reverse","역분개 → 웹 상태 복구 → 재업로드 대상 조회 (Web ID 15)"]] },
+  ],
+},
+];
+
+const { useState, useEffect, useLayoutEffect, useRef } = React;
+const html = htm.bind(React.createElement);
+const img = (k) => `img/${k}.jpg`;
+const motionOK = () => !matchMedia("(prefers-reduced-motion: reduce)").matches;
+const go = (id) => { const el = document.getElementById(id); el && el.scrollIntoView({ behavior: motionOK() ? "smooth" : "auto", block:"start" }); };
+const jump = (fn) => { const h = document.documentElement, prev = h.style.scrollBehavior; h.style.scrollBehavior = "auto"; fn(); h.style.scrollBehavior = prev; };
+const Rich = ({ s }) => html`<span dangerouslySetInnerHTML=${{ __html: s }}></span>`;
+const NAV = [["home","Home"],["sd","SD 개발"],["rap","RAP"],["erp","ERP · BAPI"],["contact","Contact"]];
+const pad = (i) => String(i + 1).padStart(2, "0");
+const NAV_H = 58;
+
+/* 라우팅: #/프로젝트/번호 = 프로그램 상세 페이지, 그 외 = 메인 */
+const hashOf = (pid, i) => `#/${pid}/${i + 1}`;
+const parse = (h) => {
+  const m = /^#\/([a-z]+)\/(\d+)$/.exec(h || "");
+  if (m) { const p = PROJECTS.find(x => x.id === m[1]); const i = Number(m[2]) - 1; if (p && p.specs[i]) return { pid:p.id, i }; }
+  return { pid:null, i:-1 };
+};
+const same = (a, b) => a.pid === b.pid && a.i === b.i;
+const plainClick = (e) => !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button);
+
+function Navbar({ active, onNav }){
+  const [open, setOpen] = useState(false);
+  const nav = (id) => { setOpen(false); onNav(id); };
+  return html`<nav class="nav"><div class="wrap">
+    <button class="brand" onClick=${() => nav("home")}><b>${PROFILE.name}</b><span>SAP ABAP Developer</span></button>
+    <button class="menubtn" aria-label="메뉴" aria-expanded=${open} onClick=${() => setOpen(!open)}><i></i></button>
+    <ul class=${"navlinks" + (open ? " open" : "")}>${NAV.map(([id, l]) => html`<li key=${id}><button aria-current=${active === id} onClick=${() => nav(id)}>${l}</button></li>`)}</ul>
+  </div></nav>`;
+}
+
+function Hero({ onNav }){
+  return html`<header id="home" class="hero"><div class="wrap hero-grid">
+    <div>
+      <div class="who"><b>${PROFILE.name}</b><span>${PROFILE.en}</span></div>
+      <h1>SAP ABAP<br/><em>Developer</em></h1>
+      <p class="lead">SD 판매·청구 프로그램, RAP 기반 MM 기준정보·구매·입고–FI 전표 연계 프로그램, BAPI를 이용한 외부 DB–SAP 전표 인터페이스를 개발했습니다.</p>
+      <div class="kw">${["ABAP","RAP","CDS View","SAPUI5","BAPI","RFC · REST","SD · MM · FI"].map(k => html`<span class="chip" key=${k}>${k}</span>`)}</div>
+    </div>
+    <nav class="index" aria-label="프로젝트 목록">
+      <div class="index-h"><span>PROJECT</span><span>PROGRAMS</span></div>
+      ${PROJECTS.map(p => html`<button key=${p.id} onClick=${() => onNav(p.id)}><b>${p.title}</b><small>${p.theme}</small><span class="n">${p.specs.length}</span></button>`)}
+    </nav>
+  </div></header>`;
+}
+
+function Arrow(){ return html`<div class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>`; }
+
+function ProcessFlow({ nodes, note }){
+  return html`<div>
+    <div class="legend"><span><i class="mine"></i>개발 범위</span>${nodes.some(n => !n.mine) ? html`<span><i></i>선행 · 후속 단계</span>` : null}</div>
+    <div class="lane">${nodes.map((n, i) => html`<${React.Fragment} key=${i}>${i ? html`<${Arrow} />` : null}
+      <div class=${"node" + (n.mine ? " mine" : "")}><span class="m">${n.m}</span><b>${n.b}</b>${n.s ? html`<small>${n.s}</small>` : null}</div></${React.Fragment}>`)}</div>
+    ${note ? html`<p class="fnote">${note}</p>` : null}
+  </div>`;
+}
+
+function Figure({ k, cap, onZoom }){
+  return html`<figure class="fig"><button onClick=${() => onZoom([k, cap])} aria-label=${cap + " 크게 보기"}><img src=${img(k)} alt=${cap} /></button><figcaption>${cap}</figcaption></figure>`;
+}
+
+function ProgramCard({ p, s, i, to }){
+  const h = hashOf(p.id, i);
+  return html`<a class="pcard" href=${h} onClick=${(e) => { if (!plainClick(e)) return; e.preventDefault(); to(h); }}>
+    <div class="pc-top"><span class="pc-no">${pad(i)}</span><span class="tags">${s.mods.map(m => html`<span class="mod m" key=${m}>${m}</span>`)}</span></div>
+    <b>${s.t}</b>
+    ${s.code ? html`<span class="pc-code">${s.code}</span>` : null}
+    <p>${s.ov}</p>
+    <div class="pc-foot"><span>${s.type}</span><span class="go">스펙 보기 →</span></div>
+  </a>`;
+}
+
+function ProjectSection({ p, alt, onZoom, to }){
+  return html`<section class=${"proj" + (alt ? " alt" : "")} id=${p.id}><div class="wrap">
+    <div class="proj-h"><span class="eyebrow">${p.no}</span><h2>${p.title}</h2><p class="theme">${p.theme}</p></div>
+    <dl class="meta">${p.meta.map(([k, v]) => html`<div key=${k}><dt>${k}</dt><dd>${v}</dd></div>`)}</dl>
+    <h3 class="sub-h">Process</h3>
+    <${ProcessFlow} nodes=${p.flow} note=${p.flowNote} />
+    <h3 class="sub-h" id=${p.id + "-list"}>프로그램 (${p.specs.length})</h3>
+    <div class="pgrid">${p.specs.map((s, i) => html`<${ProgramCard} key=${i} p=${p} s=${s} i=${i} to=${to} />`)}</div>
+    ${p.erd ? html`<h3 class="sub-h">DB 설계</h3><${Figure} k=${p.erd[0]} cap=${p.erd[1]} onZoom=${onZoom} />` : null}
+    ${p.config ? html`<h3 class="sub-h">기준정보 설정 (IMG)</h3><div class="tbl"><table><thead><tr><th>모듈</th><th>T-Code</th><th>설정 내용</th></tr></thead><tbody>
+      ${p.config.map(r => html`<tr key=${r[0]}><td><b>${r[0]}</b></td><td class="mono">${r[1]}</td><td>${r[2]}</td></tr>`)}</tbody></table></div>` : null}
+  </div></section>`;
+}
+
+function ProgramPage({ p, i, onZoom, to }){
+  const s = p.specs[i];
+  const tabs = [
+    s.imgs.length ? ["scr", "화면"] : null,
+    ["fn", "주요 기능"],
+    s.logic.length || s.validations ? ["logic", "핵심 로직"] : null,
+  ].filter(Boolean);
+  const [tab, setTab] = useState(tabs[0][0]);
+  const tabRefs = useRef({});
+  const head = useRef(null);
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) { first.current = false; return; }
+    const el = head.current; if (!el) return;
+    const y = el.getBoundingClientRect().bottom + window.scrollY - NAV_H;
+    if (window.scrollY > y + 1) jump(() => window.scrollTo(0, y));
+  }, [tab]);
+  const onKey = (e) => {
+    const ids = tabs.map(t => t[0]); let k = ids.indexOf(tab);
+    if (e.key === "ArrowRight") k = (k + 1) % ids.length;
+    else if (e.key === "ArrowLeft") k = (k - 1 + ids.length) % ids.length;
+    else if (e.key === "Home") k = 0;
+    else if (e.key === "End") k = ids.length - 1;
+    else return;
+    e.preventDefault(); setTab(ids[k]); tabRefs.current[ids[k]] && tabRefs.current[ids[k]].focus();
+  };
+  const step = (j, cls, label) => { const h = hashOf(p.id, j); return html`<a class=${"pn " + cls} href=${h} onClick=${(e) => { if (!plainClick(e)) return; e.preventDefault(); to(h); }}><small>${label}</small><b>${pad(j)} ${p.specs[j].t}</b></a>`; };
+  return html`<main class="pg"><div class="wrap">
+    <button class="crumb" onClick=${() => to("", p.id + "-list")}>← ${p.no} · ${p.title}</button>
+    <header class="pg-h" ref=${head}>
+      <div class="pg-eyebrow">PROGRAM ${pad(i)} <span>/ ${pad(p.specs.length - 1)}</span></div>
+      <h1>${s.t}</h1>
+      ${s.code ? html`<div class="pg-code">${s.code}</div>` : null}
+      <div class="tags">${s.mods.map(m => html`<span class="mod m" key=${m}>${m}</span>`)}<span class="mod">${s.type}</span></div>
+      <p class="pg-ov">${s.ov}</p>
+      ${s.video || s.links ? html`<div class="links">
+        ${s.video ? html`<a class="sbtn" href=${s.video} target="_blank" rel="noopener">시연 영상 ↗</a>` : null}
+        ${(s.links || []).map(([t, u]) => html`<a class="sbtn" key=${t} href=${u} target="_blank" rel="noopener">${t} ↗</a>`)}</div>` : null}
+    </header>
+    <div class="tabs" role="tablist" aria-label="프로그램 스펙" onKeyDown=${onKey}>
+      ${tabs.map(([id, l]) => html`<button key=${id} id=${"tab-" + id} class="tab" role="tab" aria-selected=${tab === id} aria-controls=${"panel-" + id} tabIndex=${tab === id ? 0 : -1} ref=${(el) => { tabRefs.current[id] = el; }} onClick=${() => setTab(id)}>${l}</button>`)}
+    </div>
+    <div class="tabpanel" role="tabpanel" id=${"panel-" + tab} aria-labelledby=${"tab-" + tab} tabIndex="0">
+      ${tab === "scr" ? html`<div class="shots">${s.imgs.map(([k, c]) => html`<${Figure} key=${k} k=${k} cap=${c} onZoom=${onZoom} />`)}</div>` : null}
+      ${tab === "fn" ? html`<ol class="nlist">${s.fn.map((f, j) => html`<li key=${j}><span>${f}</span></li>`)}</ol>` : null}
+      ${tab === "logic" ? html`<div>
+        ${s.logic.length ? html`<ol class="nlist">${s.logic.map((f, j) => html`<li key=${j}><${Rich} s=${f} /></li>`)}</ol>` : null}
+        ${s.validations ? html`<h2 class="sub-h">Validation (${s.validations.length})</h2><div class="vgrid">${s.validations.map(([n, d]) => html`<div class="vg" key=${n}><code>${n}</code>${d}</div>`)}</div>` : null}
+      </div>` : null}
+    </div>
+    <nav class="pnav" aria-label="이전 · 다음 프로그램">
+      ${i > 0 ? step(i - 1, "prev", "← 이전 프로그램") : null}
+      ${i < p.specs.length - 1 ? step(i + 1, "next", "다음 프로그램 →") : null}
+    </nav>
+  </div></main>`;
+}
+
+function Contact(){
+  const [copied, setCopied] = useState(false);
+  const sel = () => { const el = document.getElementById("email-v"); if (!el) return; const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
+  const copy = () => { try { navigator.clipboard.writeText(PROFILE.email).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1800); }, sel); } catch (e) { sel(); } };
+  return html`<section class="contact" id="contact"><div class="wrap">
+    <h2>Contact</h2>
+    <div class="citem"><span class="v" id="email-v">${PROFILE.email}</span>
+      <button class="sbtn" onClick=${copy}>${copied ? "복사됨" : "주소 복사"}</button>
+      <a class="sbtn" href=${"mailto:" + PROFILE.email}>메일 쓰기</a></div>
+  </div></section>`;
+}
+
+function App(){
+  const [route, setRoute] = useState(() => parse(location.hash));
+  const routeRef = useRef(route), mainY = useRef(0), pending = useRef(null);
+  const [active, setActive] = useState("home");
+  const [zoom, setZoom] = useState(null);
+  const apply = (r) => {
+    if (same(r, routeRef.current)) return;
+    if (!routeRef.current.pid) mainY.current = window.scrollY;
+    routeRef.current = r; setZoom(null); setRoute(r);
+  };
+  const to = (h, sec) => {
+    const r = parse(h);
+    if (same(r, routeRef.current)) { if (sec) go(sec); return; }
+    pending.current = sec || null;
+    try { if (location.hash !== h) location.hash = h; } catch (e) {}
+    apply(r);
+  };
+  const onNav = (id) => { if (routeRef.current.pid) to("", id); else go(id); };
+  useEffect(() => { const on = () => apply(parse(location.hash)); addEventListener("hashchange", on); return () => removeEventListener("hashchange", on); }, []);
+  useLayoutEffect(() => {
+    if (route.pid) { jump(() => window.scrollTo(0, 0)); return; }
+    const sec = pending.current; pending.current = null;
+    const el = sec ? document.getElementById(sec) : null;
+    jump(() => el ? el.scrollIntoView({ block:"start" }) : window.scrollTo(0, mainY.current));
+  }, [route]);
+  useEffect(() => {
+    if (route.pid) { setActive(route.pid); return; }
+    if (!("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) setActive(e.target.id); }), { rootMargin:"-40% 0px -55% 0px" });
+    NAV.forEach(([id]) => { const el = document.getElementById(id); el && io.observe(el); });
+    return () => io.disconnect();
+  }, [route.pid]);
+  useEffect(() => { const k = e => { if (e.key === "Escape") setZoom(null); }; addEventListener("keydown", k); return () => removeEventListener("keydown", k); }, []);
+  const p = route.pid ? PROJECTS.find(x => x.id === route.pid) : null;
+  return html`<${React.Fragment}>
+    <${Navbar} active=${active} onNav=${onNav} />
+    ${p ? html`<${ProgramPage} key=${p.id + "-" + route.i} p=${p} i=${route.i} onZoom=${setZoom} to=${to} />` : html`<${React.Fragment}>
+      <${Hero} onNav=${onNav} />
+      <main>${PROJECTS.map((q, k) => html`<${ProjectSection} key=${q.id} p=${q} alt=${k % 2 === 0} onZoom=${setZoom} to=${to} />`)}</main>
+      <${Contact} />
+    </${React.Fragment}>`}
+    <footer><div class="wrap">© 2026 ${PROFILE.name}</div></footer>
+    ${zoom ? html`<div class="lb" onClick=${() => setZoom(null)}><button aria-label="닫기">×</button><img src=${img(zoom[0])} alt=${zoom[1]} /><p>${zoom[1]}</p></div>` : null}
+  </${React.Fragment}>`;
+}
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>
