@@ -73,9 +73,7 @@ button{font:inherit;color:inherit}
   .navlinks button{width:100%;text-align:left;padding:12px}
 }
 
-.hero{padding-block:64px 56px;border-bottom:1px solid var(--line)}
-.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:end}
-@media (max-width:880px){.hero-grid{grid-template-columns:1fr;gap:32px}}
+.hero{padding-block:56px 40px}
 .who{display:flex;align-items:baseline;gap:12px;color:var(--muted);margin-bottom:14px}
 .who b{color:var(--ink);font-size:18px}
 .who span{font-family:var(--mono);font-size:12.5px;letter-spacing:.06em}
@@ -84,14 +82,6 @@ button{font:inherit;color:inherit}
 .hero .lead{font-size:clamp(16.5px,1.8vw,18.5px);margin-top:18px;max-width:34em}
 .kw{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
 .chip{font-family:var(--mono);font-size:12.5px;padding:5px 10px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-weight:500;white-space:nowrap}
-.index{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
-.index-h{padding:12px 16px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.06em;display:flex;justify-content:space-between}
-.index button{display:grid;grid-template-columns:1fr auto;gap:2px 12px;width:100%;text-align:left;padding:14px 16px;background:none;border:0;border-bottom:1px solid var(--line);cursor:pointer}
-.index button:last-of-type{border-bottom:0}
-.index button:hover{background:var(--surface-2)}
-.index b{font-size:15px}
-.index small{grid-column:1;color:var(--muted);font-size:13px}
-.index .n{grid-row:1 / span 2;grid-column:2;align-self:center;font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:600}
 
 .proj{padding-block:72px;scroll-margin-top:60px;border-bottom:1px solid var(--line)}
 .proj.alt{background:var(--surface)}
@@ -151,6 +141,20 @@ button{font:inherit;color:inherit}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
 .pcard{display:flex;flex-direction:column;gap:6px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:var(--surface);text-decoration:none;color:var(--ink);transition:border-color .15s,box-shadow .15s,transform .15s}
 .proj.alt .pcard{background:var(--bg)}
+/* 메인: 프로젝트 카드 */
+.projects{padding-block:8px 64px;scroll-margin-top:60px}
+.projects h2{font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;color:var(--muted);font-weight:600;margin-bottom:14px}
+.projgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:880px){.projgrid{grid-template-columns:1fr}}
+.prcard{display:flex;flex-direction:column;gap:8px;padding:22px 22px 18px;border:1px solid var(--line);border-radius:14px;background:var(--surface);text-decoration:none;color:var(--ink);box-shadow:var(--shadow);transition:border-color .15s,transform .15s}
+.prcard:hover{border-color:var(--accent);transform:translateY(-2px)}
+.prcard b{font-size:19px;font-weight:700;line-height:1.3;letter-spacing:-.01em}
+.prcard p{font-size:14px;color:var(--muted);line-height:1.55}
+.prcard dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:6px 0 0;font-size:13px}
+.prcard dt{font-family:var(--mono);font-size:11.5px;color:var(--faint);letter-spacing:.04em;align-self:center}
+.prcard dd{margin:0}
+.prcard .go{margin-top:auto;padding-top:12px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);font-size:13.5px;font-weight:600;color:var(--accent)}
+.prcard .go span{font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:500}
 .pcard:hover{border-color:var(--accent);box-shadow:var(--shadow);transform:translateY(-1px)}
 .pc-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .pc-no{font-family:var(--mono);font-size:12.5px;color:var(--accent);font-weight:600}
@@ -535,13 +539,17 @@ const NAV = [["home","Home"],["sd","SD 개발"],["rap","RAP"],["erp","ERP · BAP
 const pad = (i) => String(i + 1).padStart(2, "0");
 const NAV_H = 58;
 
-/* 라우팅: #/프로젝트/번호 = 프로그램 상세 페이지, 그 외 = 메인 */
+/* 라우팅: #/프로젝트 = 프로젝트 상세, #/프로젝트/번호 = 프로그램 상세, 그 외 = 메인 */
 const hashOf = (pid, i) => `#/${pid}/${i + 1}`;
+const projHash = (pid) => `#/${pid}`;
 const parse = (h) => {
-  const m = /^#\/([a-z]+)\/(\d+)$/.exec(h || "");
-  if (m) { const p = PROJECTS.find(x => x.id === m[1]); const i = Number(m[2]) - 1; if (p && p.specs[i]) return { pid:p.id, i }; }
+  const m = /^#\/([a-z]+)(?:\/(\d+))?$/.exec(h || "");
+  const p = m && PROJECTS.find(x => x.id === m[1]);
+  if (p && !m[2]) return { pid:p.id, i:-1 };
+  if (p) { const i = Number(m[2]) - 1; if (p.specs[i]) return { pid:p.id, i }; }
   return { pid:null, i:-1 };
 };
+const keyOf = (r) => r.pid ? r.pid + "/" + r.i : "";
 const same = (a, b) => a.pid === b.pid && a.i === b.i;
 const plainClick = (e) => !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button);
 
@@ -555,19 +563,26 @@ function Navbar({ active, onNav }){
   </div></nav>`;
 }
 
-function Hero({ onNav }){
-  return html`<header id="home" class="hero"><div class="wrap hero-grid">
-    <div>
-      <div class="who"><b>${PROFILE.name}</b><span>${PROFILE.en}</span></div>
-      <h1>SAP ABAP<br/><em>Developer</em></h1>
-      <p class="lead">SD 판매·청구 프로그램, RAP 기반 MM 기준정보·구매·입고–FI 전표 연계 프로그램, BAPI를 이용한 외부 DB–SAP 전표 인터페이스를 개발했습니다.</p>
-      <div class="kw">${["ABAP","RAP","CDS View","SAPUI5","BAPI","RFC · REST","SD · MM · FI"].map(k => html`<span class="chip" key=${k}>${k}</span>`)}</div>
-    </div>
-    <nav class="index" aria-label="프로젝트 목록">
-      <div class="index-h"><span>PROJECT</span><span>PROGRAMS</span></div>
-      ${PROJECTS.map(p => html`<button key=${p.id} onClick=${() => onNav(p.id)}><b>${p.title}</b><small>${p.theme}</small><span class="n">${p.specs.length}</span></button>`)}
-    </nav>
+function Hero(){
+  return html`<header id="home" class="hero"><div class="wrap">
+    <div class="who"><b>${PROFILE.name}</b><span>${PROFILE.en}</span></div>
+    <h1>SAP ABAP<br/><em>Developer</em></h1>
+    <p class="lead">SD 판매·청구 프로그램, RAP 기반 MM 기준정보·구매·입고–FI 전표 연계 프로그램, BAPI를 이용한 외부 DB–SAP 전표 인터페이스를 개발했습니다.</p>
+    <div class="kw">${["ABAP","RAP","CDS View","SAPUI5","BAPI","RFC · REST","SD · MM · FI"].map(k => html`<span class="chip" key=${k}>${k}</span>`)}</div>
   </div></header>`;
+}
+
+const linkTo = (h, to) => (e) => { if (!plainClick(e)) return; e.preventDefault(); to(h); };
+
+function ProjectCard({ p, to }){
+  const h = projHash(p.id);
+  return html`<a class="prcard" href=${h} onClick=${linkTo(h, to)}>
+    <span class="eyebrow">${p.no}</span>
+    <b>${p.title}</b>
+    <p>${p.theme}</p>
+    <dl>${p.meta.slice(0, 2).map(([k, v]) => html`<${React.Fragment} key=${k}><dt>${k}</dt><dd>${v}</dd></${React.Fragment}>`)}</dl>
+    <div class="go">프로젝트 보기 →<span>프로그램 ${p.specs.length}개</span></div>
+  </a>`;
 }
 
 function Arrow(){ return html`<div class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>`; }
@@ -600,7 +615,7 @@ function Shots({ list, onZoom }){
 
 function ProgramCard({ p, s, i, to }){
   const h = hashOf(p.id, i);
-  return html`<a class="pcard" href=${h} onClick=${(e) => { if (!plainClick(e)) return; e.preventDefault(); to(h); }}>
+  return html`<a class="pcard" href=${h} onClick=${linkTo(h, to)}>
     <div class="pc-top"><span class="pc-no">${pad(i)}</span><span class="tags">${s.mods.map(m => html`<span class="mod m" key=${m}>${m}</span>`)}</span></div>
     <b>${s.t}</b>
     ${s.code ? html`<span class="pc-code">${s.code}</span>` : null}
@@ -609,8 +624,11 @@ function ProgramCard({ p, s, i, to }){
   </a>`;
 }
 
-function ProjectSection({ p, alt, onZoom, to }){
-  return html`<section class=${"proj" + (alt ? " alt" : "")} id=${p.id}><div class="wrap">
+function ProjectPage({ p, onZoom, to }){
+  const k = PROJECTS.indexOf(p);
+  const step = (q, cls, label) => { const h = projHash(q.id); return html`<a class=${"pn " + cls} href=${h} onClick=${linkTo(h, to)}><small>${label}</small><b>${q.title}</b></a>`; };
+  return html`<main class="proj pg" id=${p.id}><div class="wrap">
+    <button class="crumb" onClick=${() => to("", "projects")}>← 전체 프로젝트</button>
     <div class="proj-h"><span class="eyebrow">${p.no}</span><h2>${p.title}</h2><p class="theme">${p.theme}</p></div>
     <dl class="meta">${p.meta.map(([k, v]) => html`<div key=${k}><dt>${k}</dt><dd>${v}</dd></div>`)}</dl>
     <h3 class="sub-h">Process</h3>
@@ -621,7 +639,11 @@ function ProjectSection({ p, alt, onZoom, to }){
     ${p.config ? html`<h3 class="sub-h">기준정보 설정 (IMG)</h3><div class="tbl"><table><thead><tr><th>모듈</th><th>T-Code</th><th>설정 내용</th></tr></thead><tbody>
       ${p.config.map(r => html`<tr key=${r[0]}><td><b>${r[0]}</b></td><td class="mono">${r[1]}</td><td>${r[2]}</td></tr>`)}</tbody></table></div>` : null}
     ${p.configImgs ? html`<div class="shots cfg">${p.configImgs.map(([k, c, w, h]) => html`<${Figure} key=${k} k=${k} cap=${c} w=${w} h=${h} onZoom=${onZoom} />`)}</div>` : null}
-  </div></section>`;
+    <nav class="pnav" aria-label="이전 · 다음 프로젝트">
+      ${k > 0 ? step(PROJECTS[k - 1], "prev", "← 이전 프로젝트") : null}
+      ${k < PROJECTS.length - 1 ? step(PROJECTS[k + 1], "next", "다음 프로젝트 →") : null}
+    </nav>
+  </div></main>`;
 }
 
 function ProgramPage({ p, i, onZoom, to }){
@@ -651,9 +673,9 @@ function ProgramPage({ p, i, onZoom, to }){
     else return;
     e.preventDefault(); setTab(ids[k]); tabRefs.current[ids[k]] && tabRefs.current[ids[k]].focus();
   };
-  const step = (j, cls, label) => { const h = hashOf(p.id, j); return html`<a class=${"pn " + cls} href=${h} onClick=${(e) => { if (!plainClick(e)) return; e.preventDefault(); to(h); }}><small>${label}</small><b>${pad(j)} ${p.specs[j].t}</b></a>`; };
+  const step = (j, cls, label) => { const h = hashOf(p.id, j); return html`<a class=${"pn " + cls} href=${h} onClick=${linkTo(h, to)}><small>${label}</small><b>${pad(j)} ${p.specs[j].t}</b></a>`; };
   return html`<main class="pg"><div class="wrap">
-    <button class="crumb" onClick=${() => to("", p.id + "-list")}>← ${p.no} · ${p.title}</button>
+    <button class="crumb" onClick=${() => to(projHash(p.id), p.id + "-list")}>← ${p.no} · ${p.title}</button>
     <header class="pg-h" ref=${head}>
       <div class="pg-eyebrow">PROGRAM ${pad(i)} <span>/ ${pad(p.specs.length - 1)}</span></div>
       <h1>${s.t}</h1>
@@ -711,43 +733,51 @@ function Lightbox({ z, onClose }){
 try { history.scrollRestoration = "manual"; } catch (e) {} // 스크롤 위치는 App이 직접 복원
 function App(){
   const [route, setRoute] = useState(() => parse(location.hash));
-  const routeRef = useRef(route), mainY = useRef(0), pending = useRef(null);
+  const routeRef = useRef(route), pos = useRef({}), fresh = useRef(false), pending = useRef(null);
   const [active, setActive] = useState("home");
   const [zoom, setZoom] = useState(null);
-  const apply = (r) => {
+  /* 링크로 들어가면 맨 위(또는 지정 섹션), 뒤로 · 앞으로 가기면 떠날 때 위치로 복원 */
+  const apply = (r, isFresh) => {
     if (same(r, routeRef.current)) return;
-    if (!routeRef.current.pid) mainY.current = window.scrollY;
+    pos.current[keyOf(routeRef.current)] = window.scrollY;
+    fresh.current = !!isFresh;
     routeRef.current = r; setZoom(null); setRoute(r);
   };
   const to = (h, sec) => {
     const r = parse(h);
-    if (same(r, routeRef.current)) { if (sec) go(sec); return; }
+    if (same(r, routeRef.current)) { if (sec) go(sec); else jump(() => window.scrollTo(0, 0)); return; }
     pending.current = sec || null;
     try { if (location.hash !== h) location.hash = h; } catch (e) {}
-    apply(r);
+    apply(r, true);
   };
-  const onNav = (id) => { if (routeRef.current.pid) to("", id); else go(id); };
+  const onNav = (id) => PROJECTS.some(q => q.id === id) ? to(projHash(id)) : to("", id === "home" ? null : id);
   useEffect(() => { const on = () => apply(parse(location.hash)); addEventListener("hashchange", on); return () => removeEventListener("hashchange", on); }, []);
   useLayoutEffect(() => {
-    if (route.pid) { jump(() => window.scrollTo(0, 0)); return; }
     const sec = pending.current; pending.current = null;
     const el = sec ? document.getElementById(sec) : null;
-    jump(() => el ? el.scrollIntoView({ block:"start" }) : window.scrollTo(0, mainY.current));
+    const y = fresh.current ? 0 : pos.current[keyOf(route)] || 0;
+    jump(() => el ? el.scrollIntoView({ block:"start" }) : window.scrollTo(0, y));
   }, [route]);
   useEffect(() => {
     if (route.pid) { setActive(route.pid); return; }
+    setActive("home");
     if (!("IntersectionObserver" in window)) return;
-    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) setActive(e.target.id); }), { rootMargin:"-40% 0px -55% 0px" });
-    NAV.forEach(([id]) => { const el = document.getElementById(id); el && io.observe(el); });
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) setActive(e.target.id === "contact" ? "contact" : "home"); }), { rootMargin:"-40% 0px -55% 0px" });
+    ["home", "projects", "contact"].forEach(id => { const el = document.getElementById(id); el && io.observe(el); });
     return () => io.disconnect();
   }, [route.pid]);
   useEffect(() => { const k = e => { if (e.key === "Escape") setZoom(null); }; addEventListener("keydown", k); return () => removeEventListener("keydown", k); }, []);
   const p = route.pid ? PROJECTS.find(x => x.id === route.pid) : null;
   return html`<${React.Fragment}>
     <${Navbar} active=${active} onNav=${onNav} />
-    ${p ? html`<${ProgramPage} key=${p.id + "-" + route.i} p=${p} i=${route.i} onZoom=${setZoom} to=${to} />` : html`<${React.Fragment}>
-      <${Hero} onNav=${onNav} />
-      <main>${PROJECTS.map((q, k) => html`<${ProjectSection} key=${q.id} p=${q} alt=${k % 2 === 0} onZoom=${setZoom} to=${to} />`)}</main>
+    ${p && route.i >= 0 ? html`<${ProgramPage} key=${p.id + "-" + route.i} p=${p} i=${route.i} onZoom=${setZoom} to=${to} />`
+    : p ? html`<${ProjectPage} key=${p.id} p=${p} onZoom=${setZoom} to=${to} />`
+    : html`<${React.Fragment}>
+      <${Hero} />
+      <main><section class="projects" id="projects"><div class="wrap">
+        <h2>PROJECTS</h2>
+        <div class="projgrid">${PROJECTS.map(q => html`<${ProjectCard} key=${q.id} p=${q} to=${to} />`)}</div>
+      </div></section></main>
       <${Contact} />
     </${React.Fragment}>`}
     <footer><div class="wrap">© 2026 ${PROFILE.name}</div></footer>
