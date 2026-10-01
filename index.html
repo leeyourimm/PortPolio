@@ -164,6 +164,22 @@ button{font:inherit;color:inherit}
 .pc-foot{margin-top:auto;padding-top:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;color:var(--faint)}
 .pc-foot .go{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--accent);white-space:nowrap}
 
+/* 코드 블록: 에디터 화면 */
+.code{margin:0 0 20px;border-radius:10px;overflow:hidden;background:#1e2230;border:1px solid #2c3242;box-shadow:var(--shadow)}
+.code-h{display:flex;align-items:center;gap:10px;padding:9px 14px;background:#262b3b;border-bottom:1px solid #2c3242;font-size:13px;color:#c9d1e4;line-height:1.45}
+.code-h i{flex:none;display:flex;gap:6px}
+.code-h i b{width:10px;height:10px;border-radius:50%;background:#4a5268}
+.code-h i b:nth-child(1){background:#ff5f57}.code-h i b:nth-child(2){background:#febc2e}.code-h i b:nth-child(3){background:#28c840}
+.code-h span{flex:1;min-width:0}
+.code-h em{flex:none;font-style:normal;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#8790a8}
+.code pre code{display:block;background:none;border:0;padding:0;border-radius:0;color:inherit;font:inherit;white-space:normal;overflow-wrap:normal}
+.code pre{margin:0;padding:12px 0;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.6;color:#d8deeb;tab-size:2}
+.code pre + pre{border-top:1px dashed #3a4156}
+.code .ln{display:block;padding-right:16px;white-space:pre}
+.code .ln::before{content:attr(data-n);display:inline-block;width:3.2em;padding-right:1em;margin-right:.6em;text-align:right;color:#59627a;border-right:1px solid #2f3547;user-select:none}
+.code .k{color:#c99bff}.code .s{color:#a6e0a0}.code .c{color:#7d879f;font-style:italic}.code .n{color:#f5b37a}.code .t{color:#7fc4ff}.code .a{color:#f0d68a}
+@media (max-width:560px){.code pre{font-size:12px}.code .ln::before{width:2.4em;padding-right:.6em;margin-right:.4em}}
+
 /* 프로그램 상세 페이지 */
 .pg{padding-block:20px 72px;min-height:calc(100vh - 58px)}
 .crumb{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:8px 0;color:var(--muted);font-size:13.5px;cursor:pointer;text-align:left}
@@ -228,6 +244,7 @@ footer{border-top:1px solid var(--line);padding-block:24px;font-size:13px;color:
 <script src="vendor/react.production.min.js"></script>
 <script src="vendor/react-dom.production.min.js"></script>
 <script src="vendor/htm.umd.js"></script>
+<script src="code.js"></script>
 <script>
 /* 모든 내용은 첨부 포트폴리오 자료에 있는 정보만 사용 */
 const PROFILE = { name:"이유림", en:"LEE YOURIM", email:"splv200@naver.com",
@@ -600,6 +617,55 @@ function Figure({ k, cap, w, h, onZoom }){
   return html`<figure class="fig" style=${w ? { width: w + 2 + "px" } : null}><button onClick=${() => onZoom([k, cap])} aria-label=${cap + " 크게 보기"}><img src=${img(k)} alt=${cap} width=${w} height=${h} loading=${w ? "lazy" : null} decoding="async" /></button><figcaption>${cap}</figcaption></figure>`;
 }
 
+/* 코드 하이라이트: 언어별 간단한 토큰 분리 (주석 · 문자열 · 키워드 · 숫자) */
+const KW = {
+  abap: "abap_false abap_true add and append appending as assign assigning at authorization begin binary by call case catch changing check class clear collect commit concatenate condense cond constants continue conv corresponding create data default define delete describe display do else elseif end endcase endclass endfor endform endfunction endif endloop endmethod endmodule endselect endtry endwhile entities entity event exceptions execute exit exporting fetch field fields fields-symbols field-symbol field-symbols for form free from function get group if implementation import importing in include index initial inner insert into is join key leave left like line lines local loop me method methods mode modify module move new not of on or order others output parameter parameters perform private protected public raise raising read receiving ref refresh reported result return returning rollback screen select selection-screen set single skip sort split start-of-selection submit table tables then to transaction try type types unassign up update using value values when where while with work",
+  cds: "and as association cast case define distinct else end entity from group having inner join key left on or order projection root select then to view when where with",
+  bdef: "action authorization create delete dependent determination draft etag field implementation in lock managed master mapping parameter persistent result strict table unique update use validation with",
+  js: "async await break case catch class const continue default delete do else export false for from function if import in instanceof let new null return switch this throw true try typeof undefined var void while",
+};
+const KWS = Object.fromEntries(Object.entries(KW).map(([k, v]) => [k, new Set(v.split(" "))]));
+const RX = {
+  abap: /("[^\n]*$)|(^\*[^\n]*$)|('(?:[^'])*'|`(?:[^`])*`|\|(?:[^|\\]|\\.)*\|)|(\b\d+\b)|([A-Za-z_][\w\-~>]*)/g,
+  cds: /(\/\/[^\n]*$)|('(?:[^'])*')|(\b\d+\b)|(@[\w.]+)|([A-Za-z_][\w]*)/g,
+  bdef: /(\/\/[^\n]*$)|('(?:[^'])*')|(\b\d+\b)|([A-Za-z_][\w]*)/g,
+  js: /(\/\/[^\n]*$)|('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*`)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_$][\w$]*)/g,
+};
+const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const sp = (cls, t) => `<span class="${cls}">${esc(t)}</span>`;
+function hlLine(line, lang){
+  if (lang === "xml") {
+    const rx = /(<!--.*?-->)|(<\/?)([\w:.]+)|([\w:.-]+)=("[^"]*"?)/g;
+    let out = "", last = 0, m;
+    while ((m = rx.exec(line))) {
+      out += esc(line.slice(last, m.index)); last = rx.lastIndex;
+      out += m[1] ? sp("c", m[1]) : m[2] ? esc(m[2]) + sp("t", m[3]) : sp("a", m[4]) + "=" + sp("s", m[5]);
+    }
+    return out + esc(line.slice(last));
+  }
+  const rx = RX[lang] || RX.abap, kws = KWS[lang] || KWS.abap;
+  let out = "", last = 0, m;
+  rx.lastIndex = 0;
+  while ((m = rx.exec(line))) {
+    out += esc(line.slice(last, m.index)); last = rx.lastIndex;
+    const t = m[0];
+    if (lang === "abap") out += m[1] || m[2] ? sp("c", t) : m[3] ? sp("s", t) : m[4] ? sp("n", t) : kws.has(t.toLowerCase()) ? sp("k", t) : esc(t);
+    else if (lang === "cds") out += m[1] ? sp("c", t) : m[2] ? sp("s", t) : m[3] ? sp("n", t) : m[4] ? sp("a", t) : kws.has(t.toLowerCase()) ? sp("k", t) : esc(t);
+    else out += m[1] ? sp("c", t) : m[2] ? sp("s", t) : m[3] ? sp("n", t) : kws.has(lang === "bdef" ? t.toLowerCase() : t) ? sp("k", t) : esc(t);
+    if (!t.length) rx.lastIndex++;
+  }
+  return out + esc(line.slice(last));
+}
+const LANG = { abap:"ABAP", cds:"CDS", bdef:"BDEF", js:"JavaScript", xml:"XML View" };
+function CodeBlock({ k, cap }){
+  const c = (window.CODE || {})[k];
+  if (!c) return null;
+  return html`<figure class="code">
+    <figcaption class="code-h"><i aria-hidden="true"><b></b><b></b><b></b></i><span>${cap}</span><em>${LANG[c.lang] || c.lang}</em></figcaption>
+    ${c.panes.map((pn, j) => html`<pre key=${j} tabIndex="0" aria-label=${cap + " 코드"}><code dangerouslySetInnerHTML=${{ __html: pn.src.split("\n").map((l, n) => `<span class="ln" data-n="${n + 1}">${hlLine(l, pn.lang) || " "}</span>`).join("") }}></code></pre>`)}
+  </figure>`;
+}
+
 /* 캡처 목록: [키, 설명, 폭, 높이], 문자열은 묶음 제목 */
 function Shots({ list, onZoom }){
   const groups = [];
@@ -694,7 +760,7 @@ function ProgramPage({ p, i, onZoom, to }){
       ${tab === "fn" ? html`<ol class="nlist">${s.fn.map((f, j) => html`<li key=${j}><span>${f}</span></li>`)}</ol>` : null}
       ${tab === "logic" ? html`<div>
         ${s.logic.length ? html`<ol class="nlist">${s.logic.map((f, j) => html`<li key=${j}><${Rich} s=${f} /></li>`)}</ol>` : null}
-        ${code.length ? html`<h2 class="sub-h">코드 (${code.length})</h2><${Shots} list=${code} onZoom=${onZoom} />` : null}
+        ${code.length ? html`<h2 class="sub-h">코드 (${code.length})</h2>${code.map(([k, c, w, h]) => (window.CODE || {})[k] ? html`<${CodeBlock} key=${k} k=${k} cap=${c} />` : html`<div class="shots" key=${k}><${Figure} k=${k} cap=${c} w=${w} h=${h} onZoom=${onZoom} /></div>`)}` : null}
         ${s.validations ? html`<h2 class="sub-h">Validation (${s.validations.length})</h2><div class="vgrid">${s.validations.map(([n, d]) => html`<div class="vg" key=${n}><code>${n}</code>${d}</div>`)}</div>` : null}
       </div>` : null}
     </div>
